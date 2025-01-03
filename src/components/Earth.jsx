@@ -13,10 +13,10 @@ const Earth = ({ scene }) => {
 
       // 지구 회전
       gsap.to(earth.rotation, {
-        y: Math.PI * 2,
-        duration: 10,
-        repeat: -1,
-        ease: "linear",
+        y: -Math.PI * 2, // 음수 값으로 설정해 반시계 방향 회전
+        duration: 10, // 10초에 한 바퀴
+        repeat: -1, // 무한 반복
+        ease: "linear", // 일정한 속도로 회전
       });
     });
   }, [scene]);
