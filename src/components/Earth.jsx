@@ -8,7 +8,7 @@ const Earth = ({ scene }) => {
     const loader = new GLTFLoader();
     loader.load("/assets/models/earth_cartoon/scene.gltf", (gltf) => {
       const earth = gltf.scene;
-      earth.scale.set(3, 3, 3);
+      earth.scale.set(4, 4, 4);
       scene.add(earth);
 
       // 지구 회전
