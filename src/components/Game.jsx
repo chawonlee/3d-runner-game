@@ -1,28 +1,42 @@
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
-import Earth from "./Earth";
-import Character from "./Character";
+import Airplane from "./Airplane";
 
 const Game = () => {
   const mountRef = useRef(null);
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
+  const sceneRef = useRef(new THREE.Scene());
+  const cameraRef = useRef(
+    new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    )
   );
-  const renderer = new THREE.WebGLRenderer();
 
   useEffect(() => {
+    const scene = sceneRef.current;
+    const camera = cameraRef.current;
+    const renderer = new THREE.WebGLRenderer();
+
+    camera.position.z = 10; // 카메라 위치
     renderer.setSize(window.innerWidth, window.innerHeight);
-    if (mountRef.current) {
+    if (mountRef.current && mountRef.current.childNodes.length === 0) {
       mountRef.current.appendChild(renderer.domElement);
     }
 
-    // 카메라 설정
-    camera.position.set(0, 6, 10);
-    camera.lookAt(0, 3, 0);
+    // 배경 추가
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      "/assets/images/sky.jpg", // 배경 이미지 경로 확인
+      (texture) => {
+        scene.background = texture; // 배경 텍스처 설정
+      },
+      undefined,
+      (error) => {
+        console.error("Error loading background texture:", error);
+      }
+    );
 
     // 빛 추가
     const light = new THREE.DirectionalLight(0xffffff, 1);
@@ -34,24 +48,21 @@ const Game = () => {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
     };
+
     animate();
 
     // Clean-up
     return () => {
       if (mountRef.current) {
-        const canvas = mountRef.current.querySelector("canvas");
-        if (canvas) {
-          mountRef.current.removeChild(canvas); // 안전하게 DOM 제거
-        }
+        mountRef.current.removeChild(renderer.domElement);
       }
-      renderer.dispose(); // WebGLRenderer 메모리 해제
+      renderer.dispose();
     };
   }, []);
 
   return (
-    <div ref={mountRef}>
-      <Earth scene={scene} />
-      <Character scene={scene} />
+    <div ref={mountRef} style={{ width: "100vw", height: "100vh" }}>
+      <Airplane scene={sceneRef.current} />
     </div>
   );
 };
